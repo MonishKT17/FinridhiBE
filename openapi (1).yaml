@@ -1,0 +1,323 @@
+openapi : 3.0.3
+info :
+   title : Finridhi APIs
+   version : 0.0.1
+tags :
+   - name : User(1)
+   - name : User(2)
+paths:
+  /login:
+    post:
+      summary: Authenticate a user
+      description: Authenticates a user based on provided credentials and returns a success/failure response.
+      tags:
+        - User(1)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  example: mypassword
+      responses:
+        '200':
+          description: User successfully authenticated
+          content:
+            application/json:
+              schema:
+                type: boolean
+                default: true
+        '400':
+          description: Invalid user credentials or other error
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Invalid UserName or Password"
+
+  /signup:
+    post:
+      summary: Create a new user account
+      description: Registers a new user with the provided details and returns the created user information.
+      tags:
+        - User(1)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Jane Doe
+                email:
+                  type: string
+                  format: email
+                  example: janedoe@example.com
+                password:
+                  type: string
+                  example: mysecretpassword
+      responses:
+        '200':
+          description: User created successfully
+          content :
+            application/json:
+              schema:
+                type: object
+                properties:
+                    id:
+                     type: string
+                    name:
+                     type: string
+                    email:
+                     type: string
+           
+        '422':
+          description: Required fields are missing
+        '400':
+          description: Error during user creation  
+ 
+  /verifyEmail:
+    post:
+      summary: Verify a user's email and password
+      description: Validates the provided email and password to confirm user existence and email ownership.
+      tags:
+        - User(1)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  example: secretpassword
+      responses:
+        '208':
+          description: User and email verified successfully
+          content:
+            application/json:
+              schema:
+                type: boolean
+                default: true
+        '401':
+          description: Invalid email or password
+        '400':
+          description: Error during verification
+
+
+  /:
+    post:
+      summary: Create a new user
+      description: Creates a new user account with the provided username, email, and password.
+      tags:
+        - User(2)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  example: mysecretpassword
+      responses:
+        '201':
+          description: User created successfully
+          content :
+           application/json :
+            schema :
+             type : object
+             properties:
+                    id:
+                     type: string
+                    name:
+                     type: string
+                    email:
+                     type: string
+         
+        '400':
+          description: Invalid request data
+        '500':
+          description: Internal server error
+
+
+  /getAllUser:
+    get:
+      summary: Retrieve all users
+      description: Fetches a list of all registered users.
+      tags:
+        - User(2)
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "unique-user-id"
+                        username:
+                          type: string
+                          example: johndoe
+                        email:
+                          type: string
+                          format: email
+                          example: johndoe@example.com
+        '500':
+          description: Internal server error
+         
+  /:{id}:
+    get:
+      summary: Retrieve a user by ID
+      description: Fetches a specific user based on their ID.
+      tags:
+        - User(2)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the user to retrieve
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "unique-user-id"
+                      username:
+                        type: string
+                        example: johndoe
+                      email:
+                        type: string
+                        format: email
+                        example: johndoe@example.com
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+         
+  /updateUserById:{id}:
+    put:
+      summary: Update a user by ID
+      description: Updates the information of a specific user based on their ID.
+      tags:
+        - User(2)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the user to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: updated_username
+                email:
+                  type: string
+                  format: email
+                  example: updated@example.com
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "unique-user-id"
+                      username:
+                        type: string
+                        example: updated_username
+                      email:
+                        type: string
+                        format: email
+                        example: updated@example.com
+                      # Add other user properties based on your implementation
+        '404':
+          description: User not found
+        '400':
+          description: Invalid request data
+        '500':
+          description: Internal server error
+         
+  /deleteUserById:{id}:
+    delete:
+      summary: Delete a user by ID
+      description: Deletes a specific user based on their ID.
+      tags:
+        - User(2)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the user to delete
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User deleted successfully
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
